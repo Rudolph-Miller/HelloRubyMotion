@@ -1,24 +1,22 @@
 class MainActivity < Android::App::Activity
   def onCreate(savedInstanceState)
     super
-    @text = Android::Widget::TextView.new(self)
-    @text.text = 'Text sample'
-    @text.textColor = Android::Graphics::Color::WHITE
-    @text.textSize = 40.0
-    self.contentView = @text
+
+    layout = Android::Widget::LinearLayout.new(self)
+    layout.orientation = Android::Widget::LinearLayout::VERTICAL
+
+    @paintView = PaintView.new(self)
+    layout.addView(@paintView, Android::Widget::LinearLayout::LayoutParams.new(Android::View::ViewGroup::LayoutParams::MATCH_PARENT, 0.0, 1.0))
+
+    button = Android::Widget::Button.new(self)
+    button.text = 'Clear'
+    button.onClickListener = self
+    layout.addView(button) 
+
+    self.contentView = layout
   end
 
-  def dispatchTouchEvent(event)
-    @counter ||= 0
-    case event.action
-    when Android::View::MotionEvent::ACTION_UP
-      @counter += 1
-      @text.text = "#{@counter} times!"
-      @text.backgroundColor = Android::Graphics::Color::BLACK
-    when Android::View::MotionEvent::ACTION_MOVE
-      @text.text = "ZOMG!"
-      @text.backgroundColor = Android::Graphics::Color.rgb(rand(255), rand(255), rand(255))
-    end
-    true
+  def onClick(view)
+    @paintView.clearPaths
   end
 end
